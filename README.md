@@ -5,3 +5,5 @@ docker compose --profile [ui] up --build
 
 
 docker compose up -d --build
+
+nvidia-smi
