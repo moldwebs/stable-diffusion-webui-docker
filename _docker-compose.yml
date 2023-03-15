@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+
+    webui:
+      container_name: service_webui
+      restart: unless-stopped
+      build: ./services/AUTOMATIC1111
+      image: sd-auto:47
+      environment:
+        - CLI_ARGS=--allow-code --xformers --enable-insecure-extension-access --api --gradio-auth user:pass  --listen --port 7860    
+      ports:
+        - "7860:7860"
+      volumes:
+        - &v1 ./data:/data
+        - &v2 ./output:/output
+      stop_signal: SIGINT
+      deploy:
+        resources:
+          reservations:
+            devices:
+                - driver: nvidia
+                  device_ids: ['0']
+                  capabilities: [gpu]
+
+    download:
+      build: ./services/download/
+      volumes:
+        - ./data:/data
+
+    portainer:
+      container_name: service_portainer
+      restart: unless-stopped
+      image: portainer/portainer:alpine
+      ports:
+          - "7861:9000"
+      volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - ./volumes/portainer:/data
+          
+          
